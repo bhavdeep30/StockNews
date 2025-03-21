@@ -21,13 +21,27 @@ class StockNewsAnalyzer:
         }
         
         try:
-            # Get today's data
-            hist = stock.history(period="1d")
-            if not hist.empty:
+            # Get 2 days of data to calculate change from previous close
+            hist = stock.history(period="2d")
+            if not hist.empty and len(hist) >= 1:
+                today_close = round(hist['Close'].iloc[-1], 2)
+                today_open = round(hist['Open'].iloc[-1], 2)
+                
+                # Calculate intraday percent change
+                intraday_change = round(((today_close - today_open) / today_open) * 100, 2)
+                
+                # Calculate previous close percent change if we have at least 2 days of data
+                prev_close_change = None
+                if len(hist) >= 2:
+                    prev_close = round(hist['Close'].iloc[-2], 2)
+                    prev_close_change = round(((today_close - prev_close) / prev_close) * 100, 2)
+                
                 self.stock_info['price_data'] = {
-                    'open': round(hist['Open'].iloc[0], 2),
-                    'close': round(hist['Close'].iloc[0], 2),
-                    'percent_change': round(((hist['Close'].iloc[0] - hist['Open'].iloc[0]) / hist['Open'].iloc[0]) * 100, 2)
+                    'open': today_open,
+                    'close': today_close,
+                    'intraday_change': intraday_change,
+                    'prev_close': prev_close if len(hist) >= 2 else None,
+                    'prev_close_change': prev_close_change
                 }
         except Exception as e:
             print(f"Error fetching stock price data: {e}")

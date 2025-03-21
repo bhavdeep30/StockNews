@@ -560,21 +560,55 @@ class StockNewsApp(App):
                 price_data = stock_info['price_data']
                 open_price = price_data['open']
                 close_price = price_data['close']
-                percent_change = price_data['percent_change']
+                intraday_change = price_data['intraday_change']
+                prev_close = price_data.get('prev_close')
+                prev_close_change = price_data.get('prev_close_change')
                 
-                # Set color based on percent change
-                change_color = POSITIVE_COLOR if percent_change >= 0 else NEGATIVE_COLOR
-                change_sign = "+" if percent_change >= 0 else ""
+                # Set color based on intraday percent change
+                intraday_color = POSITIVE_COLOR if intraday_change >= 0 else NEGATIVE_COLOR
+                intraday_sign = "+" if intraday_change >= 0 else ""
                 
-                # Update price info label with HTML-like markup for color
-                self.price_info_label.text = f"Open: ${open_price} | Close: ${close_price} | {change_sign}{percent_change}%"
-                self.price_info_label.color = change_color
+                # Create price info text
+                price_info = f"Open: ${open_price} | Close: ${close_price} | Today: {intraday_sign}{intraday_change}%"
+                
+                # Add previous close info if available
+                if prev_close is not None and prev_close_change is not None:
+                    prev_sign = "+" if prev_close_change >= 0 else ""
+                    prev_color = POSITIVE_COLOR if prev_close_change >= 0 else NEGATIVE_COLOR
+                    
+                    # Create a second label for previous close info
+                    self.price_info_label.text = price_info
+                    self.price_info_label.color = intraday_color
+                    
+                    # Update or create the previous close label
+                    if not hasattr(self, 'prev_close_label'):
+                        self.prev_close_label = Label(
+                            text=f"Prev Close: ${prev_close} | Change: {prev_sign}{prev_close_change}%",
+                            color=prev_color,
+                            font_size=dp(14)
+                        )
+                        self.price_info_box.add_widget(self.prev_close_label)
+                    else:
+                        self.prev_close_label.text = f"Prev Close: ${prev_close} | Change: {prev_sign}{prev_close_change}%"
+                        self.prev_close_label.color = prev_color
+                else:
+                    # Just show intraday change if previous close isn't available
+                    self.price_info_label.text = price_info
+                    self.price_info_label.color = intraday_color
+                    
+                    # Remove previous close label if it exists
+                    if hasattr(self, 'prev_close_label') and self.prev_close_label in self.price_info_box.children:
+                        self.price_info_box.remove_widget(self.prev_close_label)
             else:
                 self.price_info_label.text = "Price data unavailable"
                 self.price_info_label.color = TEXT_COLOR
         else:
             self.ticker_label.text = ""
             self.price_info_label.text = ""
+            
+            # Remove previous close label if it exists
+            if hasattr(self, 'prev_close_label') and self.prev_close_label in self.price_info_box.children:
+                self.price_info_box.remove_widget(self.prev_close_label)
     
     def _show_error(self, message):
         """Show an error popup"""
