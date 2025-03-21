@@ -166,7 +166,7 @@ class NewsTableRow(BoxLayout):
             orientation='horizontal',
             size_hint_x=0.2,
             spacing=dp(5),
-            padding=[dp(10), 0],  # Add horizontal padding
+            padding=[dp(20), 0],  # Increase horizontal padding
             pos_hint={'center_x': 0.5, 'center_y': 0.5}  # Center the box itself
         )
         
