@@ -202,7 +202,8 @@ class StockNewsApp(App):
             Clock.schedule_once(lambda dt: self._update_news_display(articles), 0)
             
         except Exception as e:
-            Clock.schedule_once(lambda dt: self._show_error(f"Error: {str(e)}"), 0)
+            error_message = str(e)
+            Clock.schedule_once(lambda dt: self._show_error(f"Error: {error_message}"), 0)
         finally:
             # Re-enable button
             Clock.schedule_once(lambda dt: self._enable_fetch_button(), 0)
