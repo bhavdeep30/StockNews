@@ -28,6 +28,7 @@ POSITIVE_COLOR = (0.2, 0.8, 0.2, 1)
 NEGATIVE_COLOR = (0.8, 0.2, 0.2, 1)
 NEUTRAL_COLOR = (0.7, 0.7, 0.2, 1)
 ELECTRIC_BLUE = (0.0, 0.6, 1.0, 1)  # Electric blue color
+WHITE = (1, 1, 1, 1)
 
 class NewsTableHeader(BoxLayout):
     """Header row for the news table"""
@@ -315,10 +316,10 @@ class StockNewsApp(App):
         # App title
         title_box = BoxLayout(size_hint_y=None, height=dp(50))
         title_label = Label(
-            text="STOCK NEWS SENTIMENT ANALYZER",
-            font_size=dp(24),
+            text="STOCK MARKET SENTIMENT ANALYZER",
+            font_size=dp(30),
             bold=True,
-            color=ELECTRIC_BLUE
+            color=WHITE
         )
         title_box.add_widget(title_label)
         self.main_layout.add_widget(title_box)
