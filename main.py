@@ -46,7 +46,7 @@ class NewsTableHeader(BoxLayout):
         headers = [
             ("SENTIMENT", 0.15),
             ("DATE", 0.15),
-            ("CONTENT", 0.5),
+            ("TITLE", 0.5),
             ("ACTIONS", 0.2)
         ]
         
@@ -150,7 +150,8 @@ class NewsTableRow(BoxLayout):
             halign='left',
             valign='middle',
             shorten=True,
-            shorten_from='right'
+            shorten_from='right',
+            bold=True
         )
         content_box.add_widget(title_label)
         
