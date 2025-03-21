@@ -372,12 +372,36 @@ class StockNewsApp(App):
         self.sentiment_box.add_widget(self.sentiment_label)
         self.sentiment_box.add_widget(self.sentiment_value)
         
+        # Stock price info display
+        self.price_info_box = BoxLayout(
+            orientation='vertical',
+            size_hint_x=0.3,
+            spacing=dp(2)
+        )
+        
+        # Create labels for price information
+        self.ticker_label = Label(
+            text="",
+            color=ELECTRIC_BLUE,
+            bold=True,
+            font_size=dp(18)
+        )
+        
+        self.price_info_label = Label(
+            text="",
+            color=TEXT_COLOR,
+            font_size=dp(14)
+        )
+        
+        self.price_info_box.add_widget(self.ticker_label)
+        self.price_info_box.add_widget(self.price_info_label)
+        
         # Add controls to layout
         controls.add_widget(ticker_label)
         controls.add_widget(self.ticker_input)
         controls.add_widget(self.fetch_button)
         controls.add_widget(self.sentiment_box)
-        controls.add_widget(Label(size_hint_x=0.3))  # Spacer
+        controls.add_widget(self.price_info_box)
         
         self.main_layout.add_widget(controls)
         
@@ -449,8 +473,11 @@ class StockNewsApp(App):
             analyzer = StockNewsAnalyzer(api_key=api_key)
             articles = analyzer.fetch_stock_news(ticker_symbol=ticker)
             
+            # Get stock price information
+            stock_info = analyzer.get_stock_info()
+            
             # Update UI on the main thread
-            Clock.schedule_once(lambda dt: self._update_news_display(articles), 0)
+            Clock.schedule_once(lambda dt: self._update_news_display(articles, stock_info), 0)
             
         except Exception as e:
             error_message = str(e)
@@ -459,10 +486,13 @@ class StockNewsApp(App):
             # Re-enable button
             Clock.schedule_once(lambda dt: self._enable_fetch_button(), 0)
     
-    def _update_news_display(self, articles):
-        """Update the news display with fetched articles"""
+    def _update_news_display(self, articles, stock_info):
+        """Update the news display with fetched articles and stock information"""
         # Clear existing news items
         self.news_container.clear_widgets()
+        
+        # Update stock price information
+        self._update_stock_price_display(stock_info)
         
         if not articles:
             self.status_text = "No news articles found"
@@ -520,12 +550,39 @@ class StockNewsApp(App):
         self.sentiment_value.text = sentiment_text
         self.sentiment_value.color = sentiment_color
     
+    def _update_stock_price_display(self, stock_info):
+        """Update the stock price information display"""
+        if stock_info and 'ticker' in stock_info:
+            ticker = stock_info['ticker']
+            self.ticker_label.text = f"{ticker}"
+            
+            if 'price_data' in stock_info and stock_info['price_data']:
+                price_data = stock_info['price_data']
+                open_price = price_data['open']
+                close_price = price_data['close']
+                percent_change = price_data['percent_change']
+                
+                # Set color based on percent change
+                change_color = POSITIVE_COLOR if percent_change >= 0 else NEGATIVE_COLOR
+                change_sign = "+" if percent_change >= 0 else ""
+                
+                # Update price info label with HTML-like markup for color
+                self.price_info_label.text = f"Open: ${open_price} | Close: ${close_price} | {change_sign}{percent_change}%"
+                self.price_info_label.color = change_color
+            else:
+                self.price_info_label.text = "Price data unavailable"
+                self.price_info_label.color = TEXT_COLOR
+        else:
+            self.ticker_label.text = ""
+            self.price_info_label.text = ""
+    
     def _show_error(self, message):
         """Show an error popup"""
         self.status_text = message
         self.status_bar.text = self.status_text
-        # Reset sentiment display
+        # Reset displays
         self._update_sentiment_display("N/A", TEXT_COLOR)
+        self._update_stock_price_display(None)
         
         content = BoxLayout(orientation='vertical', padding=dp(10))
         

@@ -14,6 +14,24 @@ class StockNewsAnalyzer:
         # Fetch the stock information
         stock = yf.Ticker(ticker_symbol)
         
+        # Get stock price information
+        self.stock_info = {
+            'ticker': ticker_symbol,
+            'price_data': None
+        }
+        
+        try:
+            # Get today's data
+            hist = stock.history(period="1d")
+            if not hist.empty:
+                self.stock_info['price_data'] = {
+                    'open': round(hist['Open'].iloc[0], 2),
+                    'close': round(hist['Close'].iloc[0], 2),
+                    'percent_change': round(((hist['Close'].iloc[0] - hist['Open'].iloc[0]) / hist['Open'].iloc[0]) * 100, 2)
+                }
+        except Exception as e:
+            print(f"Error fetching stock price data: {e}")
+        
         # Fetch the latest news articles
         news = stock.get_news(count=count, tab='news', proxy=None)
         news = stock.news
@@ -92,3 +110,7 @@ class StockNewsAnalyzer:
             
         df = pd.DataFrame(self.articles)
         return df
+    
+    def get_stock_info(self):
+        """Return the stock price information"""
+        return self.stock_info
