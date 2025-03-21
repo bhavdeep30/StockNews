@@ -529,12 +529,12 @@ class StockNewsApp(App):
             sorted_sentiments = sorted(sentiment_counts.items(), key=lambda x: x[1], reverse=True)
             
             # Format the sentiment counts for display
-            sentiment_display = f"Overall sentiment: {sentiment_name} ({sentiment_count} articles)"
+            sentiment_display = f"{sentiment_count} {sentiment_name}"
             
             # Add the rest of the sentiments in decreasing order
             for sent_name, sent_count in sorted_sentiments:
                 if sent_name != sentiment_name:  # Skip the overall sentiment (already displayed)
-                    sentiment_display += f" | {sent_name}: {sent_count}"
+                    sentiment_display += f", {sent_count} {sent_name}"
             
             # Update status text with all sentiment counts
             self.status_text = f"Found {len(articles)} news articles - {sentiment_display}"
