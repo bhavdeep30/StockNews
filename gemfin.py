@@ -74,9 +74,8 @@ class StockNewsAnalyzer:
             date = article_content.get('pubDate', None)
             if date:
                 try:
-                    dt = datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ")
-                    # Convert to 12-hour format with AM/PM
-                    dateandtime = dt.strftime("%Y-%m-%d %I:%M:%S %p")
+                    dt = datetime.strptime(date, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=pytz.UTC)
+                    dateandtime = dt.astimezone(pytz.timezone('US/Mountain')).strftime("%Y-%m-%d %I:%M:%S %p")
                 except ValueError:
                     dateandtime = 'Date format error'
             else:
