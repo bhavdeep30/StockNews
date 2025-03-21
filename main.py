@@ -46,8 +46,8 @@ class NewsTableHeader(BoxLayout):
         # Column headers
         headers = [
             ("SENTIMENT", 0.15),
-            ("DATE", 0.15),
             ("TITLE", 0.5),
+            ("DATE", 0.15),
             ("ACTIONS", 0.2)
         ]
         
@@ -104,18 +104,6 @@ class NewsTableRow(BoxLayout):
         )
         self.add_widget(sentiment_label)
         
-        # Add date
-        date_label = Label(
-            text=article['date'],
-            size_hint_x=0.15,
-            color=TEXT_COLOR,
-            text_size=(None, dp(80)),
-            halign='left',
-            valign='middle',
-            shorten=True
-        )
-        self.add_widget(date_label)
-        
         # Create content box for thumbnail and title
         content_box = BoxLayout(
             orientation='horizontal',
@@ -160,6 +148,18 @@ class NewsTableRow(BoxLayout):
         content_box.add_widget(title_container)
         
         self.add_widget(content_box)
+        
+        # Add date
+        date_label = Label(
+            text=article['date'],
+            size_hint_x=0.15,
+            color=TEXT_COLOR,
+            text_size=(None, dp(80)),
+            halign='left',
+            valign='middle',
+            shorten=True
+        )
+        self.add_widget(date_label)
         
         # Actions container
         actions = BoxLayout(
