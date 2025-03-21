@@ -125,8 +125,8 @@ class NewsTableRow(BoxLayout):
         # Add thumbnail if available
         thumbnail_url = article.get('thumbnail_url')
         if thumbnail_url:
-            # Create a fixed-size container for the image
-            img_container = BoxLayout(size_hint_x=0.3)
+            # Create a fixed-size container for the image with fixed width
+            img_container = BoxLayout(size_hint_x=None, width=dp(100))
             
             # Add the image
             img = AsyncImage(
@@ -136,15 +136,11 @@ class NewsTableRow(BoxLayout):
             )
             img_container.add_widget(img)
             content_box.add_widget(img_container)
-        else:
-            # Add a placeholder if no thumbnail
-            placeholder = Widget(size_hint_x=0.05)
-            content_box.add_widget(placeholder)
         
-        # Add title
+        # Add title with fixed layout
+        title_container = BoxLayout(size_hint_x=1)
         title_label = Label(
             text=article['title'],
-            size_hint_x=0.7 if thumbnail_url else 0.95,
             color=TEXT_COLOR,
             text_size=(None, dp(80)),
             halign='left',
@@ -153,7 +149,10 @@ class NewsTableRow(BoxLayout):
             shorten_from='right',
             bold=True
         )
-        content_box.add_widget(title_label)
+        # Bind the text size to the container width to ensure proper text wrapping
+        title_label.bind(width=lambda *x: setattr(title_label, 'text_size', (title_label.width, dp(80))))
+        title_container.add_widget(title_label)
+        content_box.add_widget(title_container)
         
         self.add_widget(content_box)
         
