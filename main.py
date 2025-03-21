@@ -437,8 +437,19 @@ class StockNewsApp(App):
                 news_item = NewsTableRow(article, i)
                 self.news_container.add_widget(news_item)
             
-            # Update status text with overall sentiment
-            self.status_text = f"Found {len(articles)} news articles - Overall sentiment: {sentiment_name} ({sentiment_count} articles)"
+            # Create a sorted list of sentiments by count (descending)
+            sorted_sentiments = sorted(sentiment_counts.items(), key=lambda x: x[1], reverse=True)
+            
+            # Format the sentiment counts for display
+            sentiment_display = f"Overall sentiment: {sentiment_name} ({sentiment_count} articles)"
+            
+            # Add the rest of the sentiments in decreasing order
+            for sent_name, sent_count in sorted_sentiments:
+                if sent_name != sentiment_name:  # Skip the overall sentiment (already displayed)
+                    sentiment_display += f" | {sent_name}: {sent_count}"
+            
+            # Update status text with all sentiment counts
+            self.status_text = f"Found {len(articles)} news articles - {sentiment_display}"
         
         self.status_bar.text = self.status_text
     
