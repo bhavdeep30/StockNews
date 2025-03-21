@@ -9,14 +9,14 @@ class StockNewsAnalyzer:
         self.client = genai.Client(api_key=api_key)
         self.articles = []
         
-    def fetch_stock_news(self, ticker_symbol="TSLA", count=20):
+    def fetch_stock_news(self, ticker_symbol="TSLA", count=15):
         """Fetch news for a given stock ticker and analyze sentiment"""
         # Fetch the stock information
         stock = yf.Ticker(ticker_symbol)
         
         # Fetch the latest news articles
         news = stock.get_news(count=count, tab='news', proxy=None)
-        #news = stock.news
+        news = stock.news
         
         # Clear previous articles
         self.articles = []
