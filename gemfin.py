@@ -52,10 +52,10 @@ class StockNewsAnalyzer:
             
             # Only process articles with contentType 'STORY'
             if content_type == 'STORY':
-                # Call the Google API for sentiment analysis
+                # Call the Google API for sentiment analysis with both title and summary
                 sentiment = self.client.models.generate_content(
                     model="gemini-2.0-flash-lite",
-                    contents=f"Analyze the sentiment of the following summary and classify it as POSITIVE, NEGATIVE, or NEUTRAL. No explanation needed only one word output either POSITIVE, NEGATIVE, or NEUTRAL! Summary: {summary}"
+                    contents=f"Analyze the sentiment of the following news article and classify it as POSITIVE, NEGATIVE, or NEUTRAL. No explanation needed only one word output either POSITIVE, NEGATIVE, or NEUTRAL! Title: {title} Summary: {summary}"
                 )
                 
                 # Append the article with title, date, sentiment, etc.
