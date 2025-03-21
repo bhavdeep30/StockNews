@@ -333,7 +333,7 @@ class StockNewsApp(App):
             color=TEXT_COLOR
         )
         self.ticker_input = TextInput(
-            text="TSLA",
+            text="SPY",
             multiline=False,
             size_hint_x=0.15,
             background_color=DARKER_BG,
