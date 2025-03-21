@@ -165,7 +165,9 @@ class NewsTableRow(BoxLayout):
         actions = BoxLayout(
             orientation='horizontal',
             size_hint_x=0.2,
-            spacing=dp(5)
+            spacing=dp(5),
+            padding=[dp(10), 0],  # Add horizontal padding
+            pos_hint={'center_x': 0.5, 'center_y': 0.5}  # Center the box itself
         )
         
         # View details button
@@ -173,7 +175,7 @@ class NewsTableRow(BoxLayout):
             text="Details",
             size_hint=(None, None),
             size=(dp(80), dp(35)),
-            pos_hint={'center_y': 0.5},
+            pos_hint={'center_x': 0.5, 'center_y': 0.5},  # Center horizontally and vertically
             background_color=ACCENT_COLOR
         )
         details_button.bind(on_release=self.show_details)
@@ -183,7 +185,7 @@ class NewsTableRow(BoxLayout):
             text="Link",
             size_hint=(None, None),
             size=(dp(80), dp(35)),
-            pos_hint={'center_y': 0.5},
+            pos_hint={'center_x': 0.5, 'center_y': 0.5},  # Center horizontally and vertically
             background_color=ACCENT_COLOR
         )
         link_button.bind(on_release=self.open_link)
