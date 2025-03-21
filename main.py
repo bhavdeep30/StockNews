@@ -385,12 +385,24 @@ class StockNewsApp(App):
         if not articles:
             self.status_text = "No news articles found"
         else:
+            # Count sentiments
+            sentiment_counts = {"POSITIVE": 0, "NEGATIVE": 0, "NEUTRAL": 0}
+            for article in articles:
+                sentiment = article['sentiment'].strip().upper()
+                if sentiment in sentiment_counts:
+                    sentiment_counts[sentiment] += 1
+            
+            # Determine overall sentiment (most frequent)
+            overall_sentiment = max(sentiment_counts.items(), key=lambda x: x[1])
+            sentiment_name, sentiment_count = overall_sentiment
+            
             # Add news items to the container
             for i, article in enumerate(articles):
                 news_item = NewsTableRow(article, i)
                 self.news_container.add_widget(news_item)
             
-            self.status_text = f"Found {len(articles)} news articles"
+            # Update status text with overall sentiment
+            self.status_text = f"Found {len(articles)} news articles - Overall sentiment: {sentiment_name} ({sentiment_count} articles)"
         
         self.status_bar.text = self.status_text
     
