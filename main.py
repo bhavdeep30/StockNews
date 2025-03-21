@@ -136,6 +136,10 @@ class NewsTableRow(BoxLayout):
             )
             img_container.add_widget(img)
             content_box.add_widget(img_container)
+        else:
+            # Add a placeholder with the same width to maintain layout consistency
+            placeholder = BoxLayout(size_hint_x=None, width=dp(100))
+            content_box.add_widget(placeholder)
         
         # Add title with fixed layout
         title_container = BoxLayout(size_hint_x=1)
