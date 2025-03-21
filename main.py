@@ -170,7 +170,9 @@ class NewsTableRow(BoxLayout):
         # View details button
         details_button = Button(
             text="Details",
-            size_hint_x=0.5,
+            size_hint=(None, None),
+            size=(dp(80), dp(35)),
+            pos_hint={'center_y': 0.5},
             background_color=ACCENT_COLOR
         )
         details_button.bind(on_release=self.show_details)
@@ -178,7 +180,9 @@ class NewsTableRow(BoxLayout):
         # Open link button
         link_button = Button(
             text="Link",
-            size_hint_x=0.5,
+            size_hint=(None, None),
+            size=(dp(80), dp(35)),
+            pos_hint={'center_y': 0.5},
             background_color=ACCENT_COLOR
         )
         link_button.bind(on_release=self.open_link)
