@@ -58,6 +58,20 @@ class StockNewsAnalyzer:
                     contents=f"Analyze the sentiment of the following news article and classify it as POSITIVE, NEGATIVE, or NEUTRAL. No explanation needed only one word output either POSITIVE, NEGATIVE, or NEUTRAL! Title: {title} Summary: {summary}"
                 )
                 
+                # Extract thumbnail URL if available
+                thumbnail_url = None
+                thumbnail_data = article_content.get('thumbnail', {})
+                if thumbnail_data:
+                    # Try to get the original URL first
+                    thumbnail_url = thumbnail_data.get('originalUrl')
+                    
+                    # If not available, try to get from resolutions
+                    if not thumbnail_url and 'resolutions' in thumbnail_data:
+                        resolutions = thumbnail_data['resolutions']
+                        if resolutions and isinstance(resolutions, list) and len(resolutions) > 0:
+                            # Get the first resolution URL
+                            thumbnail_url = resolutions[0].get('url')
+                
                 # Append the article with title, date, sentiment, etc.
                 self.articles.append({
                     "sentiment": sentiment.text,
@@ -65,7 +79,8 @@ class StockNewsAnalyzer:
                     "title": title,
                     "link": link,
                     "content_type": content_type,
-                    "summary": summary
+                    "summary": summary,
+                    "thumbnail_url": thumbnail_url
                 })
         
         return self.articles

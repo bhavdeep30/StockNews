@@ -45,8 +45,8 @@ class NewsTableHeader(BoxLayout):
         # Column headers
         headers = [
             ("SENTIMENT", 0.15),
-            ("DATE", 0.2),
-            ("TITLE", 0.45),
+            ("DATE", 0.15),
+            ("CONTENT", 0.5),
             ("ACTIONS", 0.2)
         ]
         
@@ -63,6 +63,9 @@ class NewsTableHeader(BoxLayout):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
 
+from kivy.uix.image import AsyncImage
+from kivy.uix.widget import Widget
+
 class NewsTableRow(BoxLayout):
     """Widget to display a news item as a table row"""
     def __init__(self, article, index, **kwargs):
@@ -70,7 +73,7 @@ class NewsTableRow(BoxLayout):
         self.orientation = 'horizontal'
         self.padding = [dp(5), dp(5)]
         self.size_hint_y = None
-        self.height = dp(60)
+        self.height = dp(80)  # Increased height to accommodate thumbnail
         
         # Store the link and article data
         self.link = article['link']
@@ -103,27 +106,55 @@ class NewsTableRow(BoxLayout):
         # Add date
         date_label = Label(
             text=article['date'],
-            size_hint_x=0.2,
+            size_hint_x=0.15,
             color=TEXT_COLOR,
-            text_size=(None, dp(60)),
+            text_size=(None, dp(80)),
             halign='left',
             valign='middle',
             shorten=True
         )
         self.add_widget(date_label)
         
+        # Create content box for thumbnail and title
+        content_box = BoxLayout(
+            orientation='horizontal',
+            size_hint_x=0.5,
+            spacing=dp(5)
+        )
+        
+        # Add thumbnail if available
+        thumbnail_url = article.get('thumbnail_url')
+        if thumbnail_url:
+            # Create a fixed-size container for the image
+            img_container = BoxLayout(size_hint_x=0.3)
+            
+            # Add the image
+            img = AsyncImage(
+                source=thumbnail_url,
+                allow_stretch=True,
+                keep_ratio=True
+            )
+            img_container.add_widget(img)
+            content_box.add_widget(img_container)
+        else:
+            # Add a placeholder if no thumbnail
+            placeholder = Widget(size_hint_x=0.05)
+            content_box.add_widget(placeholder)
+        
         # Add title
         title_label = Label(
             text=article['title'],
-            size_hint_x=0.45,
+            size_hint_x=0.7 if thumbnail_url else 0.95,
             color=TEXT_COLOR,
-            text_size=(None, dp(60)),
+            text_size=(None, dp(80)),
             halign='left',
             valign='middle',
             shorten=True,
             shorten_from='right'
         )
-        self.add_widget(title_label)
+        content_box.add_widget(title_label)
+        
+        self.add_widget(content_box)
         
         # Actions container
         actions = BoxLayout(
@@ -201,6 +232,23 @@ class NewsTableRow(BoxLayout):
         info_box.add_widget(date_label)
         info_box.add_widget(sentiment_label)
         content.add_widget(info_box)
+        
+        # Add thumbnail if available
+        thumbnail_url = self.article.get('thumbnail_url')
+        if thumbnail_url:
+            thumbnail_container = BoxLayout(
+                size_hint_y=None,
+                height=dp(200),
+                padding=[0, dp(10)]
+            )
+            
+            thumbnail = AsyncImage(
+                source=thumbnail_url,
+                allow_stretch=True,
+                keep_ratio=True
+            )
+            thumbnail_container.add_widget(thumbnail)
+            content.add_widget(thumbnail_container)
         
         # Summary in a scroll view
         scroll = ScrollView(do_scroll_x=False)
