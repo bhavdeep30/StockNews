@@ -364,7 +364,8 @@ class StockNewsApp(App):
             text="N/A",
             size_hint_x=0.6,
             color=TEXT_COLOR,
-            bold=True
+            bold=True,
+            font_size=dp(24)  # 1.5x bigger font
         )
         
         self.sentiment_box.add_widget(self.sentiment_label)
