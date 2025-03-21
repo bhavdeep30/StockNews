@@ -270,13 +270,13 @@ class StockNewsApp(App):
         # Stock ticker input
         ticker_label = Label(
             text="Stock Ticker:",
-            size_hint_x=0.2,
+            size_hint_x=0.15,
             color=TEXT_COLOR
         )
         self.ticker_input = TextInput(
             text="TSLA",
             multiline=False,
-            size_hint_x=0.2,
+            size_hint_x=0.15,
             background_color=DARKER_BG,
             foreground_color=TEXT_COLOR,
             cursor_color=TEXT_COLOR
@@ -285,17 +285,41 @@ class StockNewsApp(App):
         # Fetch button
         self.fetch_button = Button(
             text="FETCH NEWS",
-            size_hint_x=0.2,
+            size_hint_x=0.15,
             background_color=ACCENT_COLOR,
             bold=True
         )
         self.fetch_button.bind(on_release=self.fetch_news)
         
+        # Overall sentiment display
+        self.sentiment_box = BoxLayout(
+            orientation='horizontal',
+            size_hint_x=0.25,
+            spacing=dp(5)
+        )
+        
+        self.sentiment_label = Label(
+            text="Overall:",
+            size_hint_x=0.4,
+            color=TEXT_COLOR
+        )
+        
+        self.sentiment_value = Label(
+            text="N/A",
+            size_hint_x=0.6,
+            color=TEXT_COLOR,
+            bold=True
+        )
+        
+        self.sentiment_box.add_widget(self.sentiment_label)
+        self.sentiment_box.add_widget(self.sentiment_value)
+        
         # Add controls to layout
         controls.add_widget(ticker_label)
         controls.add_widget(self.ticker_input)
         controls.add_widget(self.fetch_button)
-        controls.add_widget(Label(size_hint_x=0.4))  # Spacer
+        controls.add_widget(self.sentiment_box)
+        controls.add_widget(Label(size_hint_x=0.3))  # Spacer
         
         self.main_layout.add_widget(controls)
         
@@ -384,6 +408,8 @@ class StockNewsApp(App):
         
         if not articles:
             self.status_text = "No news articles found"
+            # Reset sentiment display
+            Clock.schedule_once(lambda dt: self._update_sentiment_display("N/A", TEXT_COLOR), 0)
         else:
             # Count sentiments
             sentiment_counts = {"POSITIVE": 0, "NEGATIVE": 0, "NEUTRAL": 0}
@@ -395,6 +421,16 @@ class StockNewsApp(App):
             # Determine overall sentiment (most frequent)
             overall_sentiment = max(sentiment_counts.items(), key=lambda x: x[1])
             sentiment_name, sentiment_count = overall_sentiment
+            
+            # Set sentiment color
+            sentiment_color = POSITIVE_COLOR
+            if sentiment_name == "NEGATIVE":
+                sentiment_color = NEGATIVE_COLOR
+            elif sentiment_name == "NEUTRAL":
+                sentiment_color = NEUTRAL_COLOR
+                
+            # Update sentiment display
+            Clock.schedule_once(lambda dt: self._update_sentiment_display(sentiment_name, sentiment_color), 0)
             
             # Add news items to the container
             for i, article in enumerate(articles):
@@ -410,10 +446,17 @@ class StockNewsApp(App):
         """Re-enable the fetch button"""
         self.fetch_button.disabled = False
     
+    def _update_sentiment_display(self, sentiment_text, sentiment_color):
+        """Update the sentiment display with the given text and color"""
+        self.sentiment_value.text = sentiment_text
+        self.sentiment_value.color = sentiment_color
+    
     def _show_error(self, message):
         """Show an error popup"""
         self.status_text = message
         self.status_bar.text = self.status_text
+        # Reset sentiment display
+        self._update_sentiment_display("N/A", TEXT_COLOR)
         
         content = BoxLayout(orientation='vertical', padding=dp(10))
         
