@@ -2,6 +2,7 @@ import yfinance as yf
 from google import genai
 from datetime import datetime
 import pandas as pd
+import pytz
 
 class StockNewsAnalyzer:
     def __init__(self, api_key):
