@@ -528,16 +528,28 @@ class StockNewsApp(App):
             # Create a sorted list of sentiments by count (descending)
             sorted_sentiments = sorted(sentiment_counts.items(), key=lambda x: x[1], reverse=True)
             
-            # Format the sentiment counts for display
-            sentiment_display = f"{sentiment_count} {sentiment_name}"
+            # Format the sentiment counts for display with color coding
+            from kivy.utils import escape_markup
+            
+            # Create colored text for each sentiment count
+            sentiment_colors = {
+                "POSITIVE": POSITIVE_COLOR,
+                "NEGATIVE": NEGATIVE_COLOR,
+                "NEUTRAL": NEUTRAL_COLOR
+            }
+            
+            # Start with the overall sentiment
+            sentiment_display = f"[color=#{self._color_to_hex(sentiment_colors[sentiment_name])}]{sentiment_count} {sentiment_name}[/color]"
             
             # Add the rest of the sentiments in decreasing order
             for sent_name, sent_count in sorted_sentiments:
                 if sent_name != sentiment_name:  # Skip the overall sentiment (already displayed)
-                    sentiment_display += f", {sent_count} {sent_name}"
+                    color_hex = self._color_to_hex(sentiment_colors[sent_name])
+                    sentiment_display += f", [color=#{color_hex}]{sent_count} {sent_name}[/color]"
             
             # Update status text with all sentiment counts
             self.status_text = f"Found {len(articles)} news articles - {sentiment_display}"
+            self.status_bar.markup = True  # Enable markup for the status bar
         
         self.status_bar.text = self.status_text
     
@@ -610,6 +622,11 @@ class StockNewsApp(App):
             if hasattr(self, 'prev_close_label') and self.prev_close_label in self.price_info_box.children:
                 self.price_info_box.remove_widget(self.prev_close_label)
     
+    def _color_to_hex(self, color_tuple):
+        """Convert a color tuple (r, g, b, a) to hex format without alpha"""
+        r, g, b, a = color_tuple
+        return f"{int(r*255):02x}{int(g*255):02x}{int(b*255):02x}"
+        
     def _show_error(self, message):
         """Show an error popup"""
         self.status_text = message
